@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SR_Wellness_Report.FormExport">
+    <Position X="0.5" Y="0.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Delegate Name="SR_Wellness_Report.FormExport.EnumWindowProc">
+        <TypeIdentifier>
+          <NewMemberFileName>FormExport.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>YJIEECJEECIBAUYEISCAQMQCiAKAFFAECBkAABiAAJo=</HashCode>
+      <FileName>FormExport.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SR_Wellness_Report.FormReport">
+    <Position X="3.5" Y="0.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>IBSgFgAgGaYAGhK4wQCAEQADALjBImBABEAAgABQAA0=</HashCode>
+      <FileName>FormReport.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SR_Wellness_Report.MailMessager">
+    <Position X="3.5" Y="5.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAYAAAAAAQAAAAAAAAAAAAEgAAAQAAIUAAAAAiAAAAA=</HashCode>
+      <FileName>MailMessager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SR_Wellness_Report.RecordFilter">
+    <Position X="6.5" Y="0.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="SR_Wellness_Report.RecordFilter.RecordOwnerComparer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>RecordFilter.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+      <Class Name="SR_Wellness_Report.RecordFilter.RecordIdleComparer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>RecordFilter.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+      <Class Name="SR_Wellness_Report.RecordFilter.RecordLaborComparer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>RecordFilter.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AIEAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>RecordFilter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SR_Wellness_Report.ReportRecord">
+    <Position X="6.5" Y="6" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEEEAAACEgCAEAAJCAAAAAAiAQIAIAQAAAAACQAAUAA=</HashCode>
+      <FileName>ReportRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SR_Wellness_Report.ReportRegistry">
+    <Position X="1.75" Y="6.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>ReportRegistry.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Delegate Name="SR_Wellness_Report.CompareDelegate">
+    <Position X="6.5" Y="4.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RecordFilter.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
