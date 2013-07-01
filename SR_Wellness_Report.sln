@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SR_Wellness_Report", "SR_Wellness_Report\SR_Wellness_Report.csproj", "{2C875424-431F-441C-837B-A4F794DE14EE}"
 EndProject
 Global

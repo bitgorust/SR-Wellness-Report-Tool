@@ -71,7 +71,10 @@ namespace SR_Wellness_Report
                 }
             }
 
-            sortByOwner(ref records, FormReport.nameAsc, 0);
+            if (records.Count != 0)
+            {
+                sortByOwner(ref records, FormReport.nameAsc, 0);
+            }
 
             return records;
         }
@@ -107,8 +110,15 @@ namespace SR_Wellness_Report
                 }
             }
 
-            sortByOwner(ref r1, FormReport.nameAsc, 1);
-            sortByOwner(ref r2, FormReport.nameAsc, 1);
+            if (r2.Count != 0)
+            {
+                sortByOwner(ref r2, FormReport.nameAsc, 1);
+            }
+
+            if (r1.Count != 0)
+            {
+                sortByOwner(ref r1, FormReport.nameAsc, 1);
+            }
 
             records.Add(new ReportRecord(int.Parse(triggers[1])));
             records.AddRange(r2);

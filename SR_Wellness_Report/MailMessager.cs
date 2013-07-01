@@ -100,16 +100,23 @@ namespace SR_Wellness_Report
         public bool sendEmail(string alias, string idleTime)
         {
             string content = generateEmail(alias, idleTime);
-            if (alias != null && alias != "")
+            if (!content.Equals(string.Empty))
             {
+                if (alias != null && alias != "")
+                {
+                    if (FormReport.debugMode)
+                    {
+                        alias = "t-jizeng";
+                    }
+                    return sendMessage("", alias + "@microsoft.com", "[Action Required] Idle case update" + "【" + DateTime.Now.ToLongDateString() + "】", content);
+                }
                 if (FormReport.debugMode)
                 {
-                    alias = "t-jizeng";
                     teamEmailAddr = "t-jizeng@microsoft.com";
                 }
-                return sendMessage("", alias + "@microsoft.com", "[Action Required] Idle case update" + "【" + DateTime.Now.ToLongDateString() + "】", content);
+                return sendMessage("", teamEmailAddr, "[Action Required] Idle case update" + "【" + DateTime.Now.ToLongDateString() + "】", content);
             }
-            return sendMessage("", teamEmailAddr, "[Action Required] Idle case update" + "【" + DateTime.Now.ToLongDateString() + "】", content);
+            return true;
         }
 
         public bool sendEmail(string alias)
@@ -118,15 +125,26 @@ namespace SR_Wellness_Report
             if (alias != null && alias != "")
             {
                 content = generate_Email_HighLabor(alias);
-                if (FormReport.debugMode)
+                if (!content.Equals(string.Empty))
                 {
-                    alias = "t-jizeng";
-                    teamEmailAddr = "t-jizeng@microsoft.com";
+                    if (FormReport.debugMode)
+                    {
+                        alias = "t-jizeng";
+                    }
+                    return sendMessage("", alias + "@microsoft.com", "[Action Required] High Labor Case Update" + "【" + DateTime.Now.ToLongDateString() + "】", content);
                 }
-                return sendMessage("", alias + "@microsoft.com", "[Action Required] High Labor Case Update"+"【" + DateTime.Now.ToLongDateString() + "】", content);
+                return true;
             }
             content = generate_Email_HighLabor();
-            return sendMessage("", teamEmailAddr, "[Action Required] High Labor Case Update" + "【" + DateTime.Now.ToLongDateString() + "】", content);
+            if (!content.Equals(string.Empty))
+            {
+                if (FormReport.debugMode)
+                {
+                    teamEmailAddr = "t-jizeng@microsoft.com";
+                }
+                return sendMessage("", teamEmailAddr, "[Action Required] High Labor Case Update" + "【" + DateTime.Now.ToLongDateString() + "】", content);
+            }
+            return true;
         }
 
         private bool sendMessage(string from, string to, string subject, string content)
@@ -160,6 +178,11 @@ namespace SR_Wellness_Report
 
         public string generateEmail(string alias, string idleTime)
         {
+            if (records.Count == 0)
+            {
+                return string.Empty;
+            }
+
             if (alias != null && alias != "")
                 buildReportTitle(0, alias);
             else
@@ -167,37 +190,53 @@ namespace SR_Wellness_Report
 
             buildTableHead();
 
+            bool hasContent = false;
             if (alias != null && alias != "")
             {
                 foreach (ReportRecord record in records)
                     if (alias.Equals(record.SROwner))
+                    {
                         this.mailContent.AppendLine(record.toHTML(idleTime));
+                        hasContent = true;
+                    }
             }
             else
             {
                 foreach (ReportRecord record in records)
                     if (RecordFilter.Compare(record.IdleMetric, idleTime, RecordFilter.ByIdleMetric) >= 0)
+                    {
                         this.mailContent.AppendLine(record.toHTML(idleTime));
+                        hasContent = true;
+                    }
             }
 
             this.mailContent.Append("</table></body></html>");
 
-            return this.mailContent.ToString();
+            if (hasContent)
+            {
+                return this.mailContent.ToString();
+            }
+            return string.Empty;
         }
 
         public string generate_Email_HighLabor()
         {
+            if (records.Count == 2)
+            {
+                return string.Empty;
+            }
+
             buildReportTitle(1,"team");
 
             int i = 0;
             int trigger2 = records[i++].trigger;
-            this.mailContent.AppendLine("<font size=\"2\" color=\"000055\"><b>The cases that have reached <b style=\"background:#ffff00\">trigger2(" + trigger2 + ")</b>:</b></font>");
-            this.mailContent.AppendLine("<br/>");
-            this.mailContent.AppendLine("<font size=\"2\" color=\"000055\"><b>Total Labor (Mins)[Premier cases(excluding advisory): <b style=\"background:#ffff00\">" + trigger2 + "+</b>]</b></font>");
-            this.mailContent.AppendLine("<br/><br/>");
-
-            if (i < records.Count)
+            if (!records[i].isEmpty())
             {
+                this.mailContent.AppendLine("<font size=\"2\" color=\"000055\"><b>The cases that have reached <b style=\"background:#ffff00\">trigger2(" + trigger2 + ")</b>:</b></font>");
+                this.mailContent.AppendLine("<br/>");
+                this.mailContent.AppendLine("<font size=\"2\" color=\"000055\"><b>Total Labor (Mins)[Premier cases(excluding advisory): <b style=\"background:#ffff00\">" + trigger2 + "+</b>]</b></font>");
+                this.mailContent.AppendLine("<br/><br/>");
+
                 buildTableHead();
                 for (; i < records.Count; i++)
                 {
@@ -208,17 +247,17 @@ namespace SR_Wellness_Report
                     }
                     this.mailContent.Append(records[i].toHTML());
                 }
+                this.mailContent.AppendLine("<br/><br/>");
             }
 
             int trigger1 = records[i++].trigger;
-            this.mailContent.AppendLine("<br/><br/>");
-            this.mailContent.AppendLine("<font size=\"2\" color=\"000055\"><b>The cases that have reached <b style=\"background:#ffff00\">trigger1(" + trigger1 + ")</b>:</b></font>");
-            this.mailContent.AppendLine("<br/>");
-            this.mailContent.AppendLine("<font size=\"2\" color=\"000055\"><b>Total Labor (Mins)[Premier Cases(excluding advisory): <b style=\"background:#ffff00\">" + trigger1 + "~" + trigger2 + "</b>]</b></font>");
-            this.mailContent.AppendLine("<br/><br/>");
-
             if (i < records.Count)
             {
+                this.mailContent.AppendLine("<font size=\"2\" color=\"000055\"><b>The cases that have reached <b style=\"background:#ffff00\">trigger1(" + trigger1 + ")</b>:</b></font>");
+                this.mailContent.AppendLine("<br/>");
+                this.mailContent.AppendLine("<font size=\"2\" color=\"000055\"><b>Total Labor (Mins)[Premier Cases(excluding advisory): <b style=\"background:#ffff00\">" + trigger1 + "~" + trigger2 + "</b>]</b></font>");
+                this.mailContent.AppendLine("<br/><br/>");
+
                 buildTableHead();
                 for (; i < records.Count; i++)
                 {
@@ -233,6 +272,8 @@ namespace SR_Wellness_Report
 
         public string generate_Email_HighLabor(string alias)
         {
+            bool hasContent = false;
+
             buildReportTitle(1, alias);
 
             int i = 0;
@@ -254,18 +295,18 @@ namespace SR_Wellness_Report
                         this.mailContent.AppendLine("<br/><br/>");
                         buildTableHead();
                         isAddTableHead = true;
+                        hasContent = true;
                     }
                     this.mailContent.Append(records[i].toHTML());
                 }
             }
-            
+            if (isAddTableHead)
+            {
+                this.mailContent.Append("</table>");
+                this.mailContent.AppendLine("<br/><br/>");
+            }
+
             int trigger1 = records[i++].trigger;
-            this.mailContent.Append("</table>");
-            this.mailContent.AppendLine("<br/><br/>");
-            this.mailContent.AppendLine("<font size=\"2\" color=\"000033\"><b>The cases that have reached <b style=\"background:#ffff00\">trigger1(" + trigger1 + ")</b>:</b></font>");
-            this.mailContent.AppendLine("<br/>");
-            this.mailContent.AppendLine("<font size=\"2\" color=\"000033\"><b>Total Labor (Mins)[Premier Cases(excluding advisory): <b style=\"background:#ffff00\">" + trigger1 + "~" + trigger2 + "</b>]</b></font>");
-            this.mailContent.AppendLine("<br/><br/>");
             isAddTableHead = false;
             for (; i < records.Count; i++)
             {
@@ -273,17 +314,28 @@ namespace SR_Wellness_Report
                 {
                     if (!isAddTableHead)
                     {
+                        this.mailContent.AppendLine("<font size=\"2\" color=\"000033\"><b>The cases that have reached <b style=\"background:#ffff00\">trigger1(" + trigger1 + ")</b>:</b></font>");
+                        this.mailContent.AppendLine("<br/>");
+                        this.mailContent.AppendLine("<font size=\"2\" color=\"000033\"><b>Total Labor (Mins)[Premier Cases(excluding advisory): <b style=\"background:#ffff00\">" + trigger1 + "~" + trigger2 + "</b>]</b></font>");
+                        this.mailContent.AppendLine("<br/><br/>");
                         buildTableHead();
                         isAddTableHead = true;
+                        hasContent = true;
                     }
                     this.mailContent.Append(records[i].toHTML());
                 }
             }
+            if (isAddTableHead)
+            {
+                this.mailContent.Append("</table>");
+                this.mailContent.Append("</body></html>");
+            }
 
-            this.mailContent.Append("</table>");
-            this.mailContent.Append("</body></html>");
-
-            return this.mailContent.ToString();
+            if (hasContent)
+            {
+                return this.mailContent.ToString();
+            }
+            return string.Empty;
         }
     }
 }
