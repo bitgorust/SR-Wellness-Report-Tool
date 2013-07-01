@@ -74,6 +74,7 @@ namespace SR_Wellness_Report
             if (autoMode)
             {
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(FormExport.PIDLMRU_PATH + "\\OpenSavePidlMRU\\xml", false);
+                //MessageBox.Show(getPathFromPIDL((byte[])key.GetValue("0")));
                 if (key != null && key.GetValue("0") != null)
                 {
                     this.textBoxPath.Text = getPathFromPIDL((byte[])key.GetValue("0"));
@@ -144,11 +145,12 @@ namespace SR_Wellness_Report
 
         private void FormReport_Load(object sender, EventArgs e)
         {
-            loadRegistryAndConf();
             loadCommandArgs();
+            loadRegistryAndConf();
 
             if (autoMode)
             {
+                //MessageBox.Show(this.textBoxPath.Text);
                 if (idleSent)
                 {
                     this.comboBoxProperty.Text = MIN_IDLE_TIME;

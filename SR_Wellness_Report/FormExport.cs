@@ -18,6 +18,8 @@ namespace SR_Wellness_Report
     {
         public const string PIDLMRU_PATH = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32";
 
+        private static string SSolveAddr = "https://detego.partners.extranet.microsoft.com/Pages/Home.aspx?sharedreportid=012d10b3-377c-4ad1-bc03-29260d86aaab";
+        private static string DomainUser = System.Environment.UserDomainName + "\\" + System.Environment.UserName;
         private static bool autoMode = false;
 
         [DllImport("user32.dll", EntryPoint = "FindWindow")]
@@ -37,17 +39,16 @@ namespace SR_Wellness_Report
         private extern static bool EnumChildWindows(IntPtr window, EnumWindowProc callback, IntPtr i);
         private delegate bool EnumWindowProc(IntPtr hwnd, IntPtr parameter);
         private const int btnOK = 6;
-        private const int txtPasswd = 14;
+        private const int txtPasswd = 14;   // in case that only password is needed
+        private const int txtUser = 14;
+        private const int txtPass = 16;
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         private extern static bool SetWindowText(IntPtr hwnd, String lpString);
 
-        //[return: MarshalAs(UnmanagedType.Bool)]
-        [DllImport("user32.dll", SetLastError = true/*, CharSet = CharSet.Auto*/)]
+        [DllImport("user32.dll", SetLastError = true)]
         private extern static IntPtr SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
         private const uint BM_CLICK = 0x00F5;
-        //private const uint WM_LBUTTONDOWN = 0x0201;
-        //private const uint WM_LBUTTONUP = 0x0202;
 
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("user32.dll", SetLastError = true)]
@@ -65,8 +66,6 @@ namespace SR_Wellness_Report
         private const string REPORT_SESSION = "ReportSession";
         //private static string CONTROL_ID = "ControlID";
         private const string REPORT_PAGE_KEY = "Format=";
-
-        //private static string SavePath = System.IO.Directory.GetCurrentDirectory() + "\\SRWellnessReport.xml";
 
         private static int waitSeconds = 12;
         private static bool downloaded = false;
@@ -107,10 +106,13 @@ namespace SR_Wellness_Report
                 }
             }
 
-            // TODO: load urls from database
-            string sSolveAddr = ReportRegistry.readValue(LINK_PATH);
-            addrComboBox.Items.Add(sSolveAddr);
-            addrComboBox.Text = sSolveAddr;
+            string registryAddr = ReportRegistry.readValue(LINK_PATH);
+            if (!registryAddr.Equals(string.Empty))
+            {
+                SSolveAddr = registryAddr;
+            }
+            addrComboBox.Items.Add(SSolveAddr);
+            addrComboBox.Text = SSolveAddr;
 
             if (autoMode)
             {
@@ -195,20 +197,12 @@ namespace SR_Wellness_Report
             if (!autoMode)
             {
                 if (loginHwnd == IntPtr.Zero || GetChildWindows(loginHwnd).Count != 15)
-                {
+                {   
                     recording = false;
                 }
                 else if (!recording)
                 {
                     List<IntPtr> list = GetChildWindows(loginHwnd);
-                    /*
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        StringBuilder sb = new StringBuilder(100);
-                        GetWindowText(list[i], sb, 100);
-                        MessageBox.Show(sb.ToString() + ":" + i);
-                    }
-                     * */
                     SetWindowText(list[txtPasswd], string.Empty);
                     new Thread(new ThreadStart(recordPasswd)).Start();
                     recording = true;
@@ -217,10 +211,18 @@ namespace SR_Wellness_Report
             }
             else if (!saved)    // auto mode
             {
-                if (loginHwnd != IntPtr.Zero && GetChildWindows(loginHwnd).Count == 15)
+                if (loginHwnd != IntPtr.Zero && (GetChildWindows(loginHwnd).Count == 15 || GetChildWindows(loginHwnd).Count == 17))
                 {
                     List<IntPtr> list = GetChildWindows(loginHwnd);
-                    SetWindowText(list[txtPasswd], ReportRegistry.readValue(PASSWD_PATH));
+                    if (list.Count == 15)        // only password is needed
+                    {
+                        SetWindowText(list[txtPasswd], ReportRegistry.readValue(PASSWD_PATH));
+                    }
+                    if (list.Count == 17)   // both user name and password are needed
+                    {
+                        SetWindowText(list[txtUser], DomainUser);
+                        SetWindowText(list[txtPass], ReportRegistry.readValue(PASSWD_PATH));
+                    }
                     SendMessage(list[btnOK], BM_CLICK, IntPtr.Zero, IntPtr.Zero);
                 }
                 backgroundSearcher.RunWorkerAsync();
@@ -294,27 +296,6 @@ namespace SR_Wellness_Report
                 SendMessage(list[19], BM_CLICK, IntPtr.Zero, IntPtr.Zero);  // list[19] is the Save btn
                 saveWnd = FindWindow(null, "Save As");
             }
-            /*
-            IntPtr cmplWnd = FindWindow(null, "Download complete");   // Capture the Save As dialog
-            while (cmplWnd == IntPtr.Zero)
-            {
-                Thread.Sleep(1000);
-                cmplWnd = FindWindow(null, "Download complete");
-            }
-            while (cmplWnd != IntPtr.Zero)
-            {
-                Thread.Sleep(1000);
-                List<IntPtr> list = GetChildWindows(saveWnd);
-                for (int i = 0; i < list.Count; i++)
-                {
-                    StringBuilder sb = new StringBuilder(100);
-                    GetWindowText(list[i], sb, 100);
-                    MessageBox.Show(sb.ToString() + ":" + i);
-                }
-                //SendMessage(list[19], BM_CLICK, IntPtr.Zero, IntPtr.Zero);  // list[19] is the Save btn
-                cmplWnd = FindWindow(null, "Download complete");
-            }
-            */
 
             keybd_event(0x0D, 0x9C, 0, 0);      // Press down Enter
             keybd_event(0x0D, 0x9C, 0x0002, 0); // Release Enter

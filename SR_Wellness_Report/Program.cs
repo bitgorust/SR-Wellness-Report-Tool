@@ -15,6 +15,7 @@ namespace SR_Wellness_Report
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            //MessageBox.Show("It's my SHOW TIME!\nJust have a rest and watch my show!");
             Application.Run(new FormExport());
             Application.Run(new FormReport());
         }
